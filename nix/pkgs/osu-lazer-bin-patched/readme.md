@@ -1,0 +1,1 @@
+Adapted from https://github.com/fufexan/nix-gaming/blob/master/pkgs/osu-lazer-bin
