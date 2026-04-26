@@ -36,28 +36,32 @@ This should go without saying, but if you experience any issues while using the 
 
 1. 1 dependency is required - Nix (build tool) - available to download from https://nixos.org/download/.
 2. Run osu normally and select **An ALSA audio device from osu audio settings**. Anything that is not "Default" or "Pipewire Server" or "Pulse Audio" is ALSA device. **This is important**! Otherwise your audio will break.
-3. Run without installation: `OSU_LATENCY_TWEAKER_FREQ=44100 OSU_LATENCY_TWEAKER_PERIOD=-256 NIXPKGS_ALLOW_UNFREE=1 nix run --extra-experimental-features 'nix-command flakes' --impure github:rszyma/osu-latency-tweaker`
-4. If you confirm that it runs without issues, then read on, and tweak the environment variables for even lower latency. Pick first one from the table below that works for you without issues.
+3. Run without installation: `OSU_LATENCY_TWEAKER_FREQ=44100 OSU_LATENCY_TWEAKER_PERIOD=-441 NIXPKGS_ALLOW_UNFREE=1 nix run --extra-experimental-features 'nix-command flakes' --impure github:rszyma/osu-latency-tweaker`. This is just to see if it's working - it runs with the same latency params as osu.
+4. If you confirm that it runs without issues, then read on, and tweak the environment variables to lower the latency. Pick first one from the table below that works for you without issues.
 
-    Pick the highest frequency that your audio interface supports, and which doesn't produce audio artifacts such a popping or crackling.
+    Pick the highest frequency that your audio interface supports, and lowest period size that doesn't produce audio artifacts such a popping or crackling.
 BTW, it doesn't make sense to me why higher sample rates in practice yield lower latency in osu, but measurements don't lie.
 
     **You should verify** that it indeed runs at requested frequency, otherwise it will just fallback to lower frequency with worse latency.
-      - To verify, run: `cat /proc/asound/card*/pcm*/sub*/hw_params` while osu is running.
+      - To verify, run: `cat /proc/asound/card*/pcm*/sub*/hw_params` while osu is running and check "rate" in the output.
 
-   | Frequency | Setting | Latency (in theory) | Latency (measured<sup>1</sup>) |
+   | Frequency | Setting | Latency (in theory<sup>2</sup>) | Latency (measured<sup>2</sup>) |
    |---|---|---:|---:|
-   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 1.3 ms | ~7.5 ms |
-   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-512` | 2.7 ms | — |
-   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-1024` | 5.3 ms | — |
-   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-128` | 1.3 ms | — |
-   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 2.7 ms | — |
-   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-512` | 5.3 ms | — |
-   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-64` | 1.3 ms | ~12 ms |
-   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-128` | 2.7 ms | — |
-   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 5.3 ms | — |
+   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 2.7 ms | ~7.5 ms |
+   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-512` | 5.3 ms | — |
+   | 192000 Hz | `OSU_LATENCY_TWEAKER_FREQ=192000 OSU_LATENCY_TWEAKER_PERIOD=-1024` | 10.7 ms | — |
+   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-128` | 2.7 ms | — |
+   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 5.3 ms | — |
+   | 96000 Hz | `OSU_LATENCY_TWEAKER_FREQ=96000 OSU_LATENCY_TWEAKER_PERIOD=-512` | 10.7 ms | — |
+   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-64` | 2.7 ms | ~12 ms |
+   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-128` | 5.3 ms | — |
+   | 48000 Hz | `OSU_LATENCY_TWEAKER_FREQ=48000 OSU_LATENCY_TWEAKER_PERIOD=-256` | 10.7 ms | — |
 
-   <sup>1</sup>  roundtrip latency of hitsounds on my system, from mouse click to capturing them with microphone. See [1][measurements-1],[2][measurements-2] for context.
+   <sup>1</sup> Calculated: `period_size / frequency * 1000 * 2` (2x because buffer size is 2x of period size)
+   <br/>
+   <sup>2</sup> Roundtrip latency of hitsounds on my system, from mouse click to capturing them with microphone. See [1][measurements-1],[2][measurements-2] for context.
+
+   Note about `OSU_LATENCY_TWEAKER_PERIOD`: you may also set it to positive value e.g. `OSU_LATENCY_TWEAKER_PERIOD=5` for values in milliseconds, which will be auto-calculated into sample-size. For exact sample size set it to negative value. Buffer size (which dictates final buffer latencies) is calculated for you underneath, and is always going to be 2x the period size.
 
 1. (Optional but recommended) Adjust the global offset: change it by around -5 to -25 to shift visuals forward now that the audio track is heard earlier.
 
