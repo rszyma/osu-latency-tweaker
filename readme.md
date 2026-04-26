@@ -61,9 +61,9 @@ BTW, it doesn't make sense to me why higher sample rates in practice yield lower
    <br/>
    <sup>2</sup> Roundtrip latency of hitsounds on my system, from mouse click to capturing them with microphone. See [1][measurements-1],[2][measurements-2] for context.
 
-   Note about `OSU_LATENCY_TWEAKER_PERIOD`: you may also set it to positive value e.g. `OSU_LATENCY_TWEAKER_PERIOD=5` for values in milliseconds, which will be auto-calculated into sample-size. For exact sample size set it to negative value. Buffer size (which dictates final buffer latencies) is calculated for you underneath, and is always going to be 2x the period size.
+   Note about `OSU_LATENCY_TWEAKER_PERIOD`: you may also set it to positive value e.g. `OSU_LATENCY_TWEAKER_PERIOD=5` for values in milliseconds, which will be auto-calculated into sample-size. For exact sample size set it to a negative value. Buffer size (which dictates final buffer latencies) is calculated for you underneath, and is always going to be 2x the period size.
 
-1. (Optional but recommended) Adjust the global offset: change it by around -5 to -25 to shift visuals forward now that the audio track is heard earlier.
+1. (Optional) Now that the audio track is heard earlier, you may want to slightly adjust the global offset by a couple ms, to shift hit-objects to show faster too.
 
 [measurements-1]: https://github.com/ppy/osu-framework/issues/6647#issuecomment-4114578725
 [measurements-2]: https://github.com/ppy/osu-framework/issues/6647#issuecomment-4121944500
