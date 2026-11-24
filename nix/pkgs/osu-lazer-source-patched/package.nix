@@ -4,7 +4,8 @@
 # It carries the version of the release it is based on, so osu treats it as a deployed build
 # (no "development build" banner). Crash reports to ppy stay off, as the code differs from that
 # release. The server does not know its executable hash, so it does not request score
-# submission (OSU_DISABLE_SCORE_SUBMISSION=0 tries anyway), and multiplayer does not work.
+# submission or connect to the realtime servers (spectating, multiplayer, online presence).
+# OSU_DISABLE_SCORE_SUBMISSION=0 and OSU_DISABLE_REALTIME=0 try anyway.
 # It uses the same data directory as the release.
 {
   lib,
@@ -65,6 +66,13 @@ buildDotnetModule (finalAttrs: {
     substituteInPlace osu/osu.Game/Screens/Play/SoloPlayer.cs \
       --replace-fail 'if (beatmapId <= 0)' \
                      'if (beatmapId <= 0 || System.Environment.GetEnvironmentVariable("OSU_DISABLE_SCORE_SUBMISSION") == "1")'
+
+    # The realtime servers (spectator, multiplayer, metadata) reject an unknown executable hash too,
+    # and osu posts "Realtime online functionality is not supported" for each rejected call.
+    # Do not connect to them, as for an API without realtime support.
+    substituteInPlace osu/osu.Game/Online/API/APIAccess.cs \
+      --replace-fail 'new HubClientConnector(clientName, endpoint, this, versionHash);' \
+                     'System.Environment.GetEnvironmentVariable("OSU_DISABLE_REALTIME") == "1" ? null : new HubClientConnector(clientName, endpoint, this, versionHash);'
   '';
 
   projectFile = "osu/osu.Desktop/osu.Desktop.csproj";
@@ -115,6 +123,7 @@ buildDotnetModule (finalAttrs: {
       --set OSU_EXTERNAL_UPDATE_PROVIDER 1 \
       --set OSU_DISABLE_ERROR_REPORTING 1 \
       --set-default OSU_DISABLE_SCORE_SUBMISSION 1 \
+      --set-default OSU_DISABLE_REALTIME 1 \
       --set vblank_mode 0
     ln -s osu! $out/bin/osu-lazer
 
