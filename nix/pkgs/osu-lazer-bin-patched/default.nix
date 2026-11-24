@@ -65,11 +65,14 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     install osu.png $out/osu.png
     cp -r usr/bin $out/lib/osu
 
+    # A gen0 budget of 256 MB, so that the little garbage made during gameplay (about 0.1 MB/s)
+    # does not cause gen0 collections, each a pause of all threads, within a map.
     makeWrapper $out/lib/osu/osu\! $out/bin/osu-lazer \
       ${lib.optionalString nativeWayland "--set-default SDL_VIDEODRIVER wayland"} \
       --set OSU_EXTERNAL_UPDATE_PROVIDER "1" \
       --set OSU_EXTERNAL_UPDATE_STREAM "${releaseStream}" \
       --set vblank_mode "0" \
+      --set-default DOTNET_GCgen0size 0x10000000 \
       --suffix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}"
 
     runHook postInstall

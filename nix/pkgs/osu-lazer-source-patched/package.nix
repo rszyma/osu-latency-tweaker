@@ -118,13 +118,16 @@ buildDotnetModule (finalAttrs: {
   executables = [ "osu!" ];
 
   postFixup = ''
+    # A gen0 budget of 256 MB, so that the little garbage made during gameplay (about 0.1 MB/s)
+    # does not cause gen0 collections, each a pause of all threads, within a map.
     wrapProgram $out/bin/osu! \
       ${lib.optionalString nativeWayland "--set-default SDL_VIDEODRIVER wayland"} \
       --set OSU_EXTERNAL_UPDATE_PROVIDER 1 \
       --set OSU_DISABLE_ERROR_REPORTING 1 \
       --set-default OSU_DISABLE_SCORE_SUBMISSION 1 \
       --set-default OSU_DISABLE_REALTIME 1 \
-      --set vblank_mode 0
+      --set vblank_mode 0 \
+      --set-default DOTNET_GCgen0size 0x10000000
     ln -s osu! $out/bin/osu-lazer
 
     # Replace BASS_Init symbol with our wrapper from basscallwrap.so.
