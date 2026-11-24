@@ -72,6 +72,24 @@ BTW, it doesn't make sense to me why higher sample rates in practice yield lower
 [measurements-1]: https://github.com/ppy/osu-framework/issues/6647#issuecomment-4114578725
 [measurements-2]: https://github.com/ppy/osu-framework/issues/6647#issuecomment-4121944500
 
+### Build from local osu and osu-framework branches
+
+`osu-lazer-launcher-source` runs the same launcher with osu built from source,
+from the `gameplay-allocations` branch of `~/llm-projects/osu-lazer`
+and the `input-latency` branch of `~/llm-projects/osu-framework`, with the same libbass patch.
+
+```sh
+NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#osu-lazer-launcher-source
+```
+
+Set `OSU_SRC`, `OSU_REF`, `OSU_FRAMEWORK_SRC` and `OSU_FRAMEWORK_REF` to build other clones or branches.
+Only committed changes are built.
+After a change to the NuGet packages of either repo, update the lockfile with
+`nix build --impure .#osu-lazer-source-patched.fetch-deps && ./result nix/pkgs/osu-lazer-source-patched/deps.json`.
+
+This is a development build: no score submission, no multiplayer, no update checks and no crash reports.
+It uses the same osu data directory as the release.
+
 ### Dev notes
 
 Using `LD_PRELOAD` would be preferred (less invasive) than patching, and initially I wanted to use it, but couldn't make it work.
