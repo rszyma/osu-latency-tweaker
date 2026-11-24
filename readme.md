@@ -1,5 +1,9 @@
 # osu-latency-tweaker
 
+> [!WARNING]
+> Deprecated in favor of [alsaforce](https://github.com/rszyma/alsaforce),
+> which does the same without patching BASS, and works with any ALSA program.
+
 A wrapper for official osu-lazer on Linux, that reduces the audio latency of ALSA devices to absolute minimum (1-2 ms).
 
 ### How does this work?
