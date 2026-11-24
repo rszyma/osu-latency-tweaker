@@ -35,8 +35,12 @@ This should go without saying, but if you experience any issues while using the 
 ### How to install / use it?
 
 1. 1 dependency is required - Nix (build tool) - available to download from https://nixos.org/download/.
-2. Run osu normally and select **An ALSA audio device from osu audio settings**. Anything that is not "Default" or "Pipewire Server" or "Pulse Audio" is ALSA device. **This is important**! Otherwise your audio will break.
-3. Run without installation: `OSU_LATENCY_TWEAKER_FREQ=44100 OSU_LATENCY_TWEAKER_PERIOD=-441 NIXPKGS_ALLOW_UNFREE=1 nix run --extra-experimental-features 'nix-command flakes' --impure github:rszyma/osu-latency-tweaker`. This is just to see if it's working - it runs with the same latency params as osu.
+2. On start, a menu lists your sound cards (ALSA devices). Pick the one you listen on.
+   The launcher sets it as the audio device in osu's settings, so osu talks to the card directly (not through "Default", "Pipewire Server" or "Pulse Audio"). **This is important**! Otherwise your audio will break.
+   If PipeWire runs, the launcher also turns that card "Off" in PipeWire while osu runs (the same as pavucontrol -> Configuration), because PipeWire keeps every card open. When osu exits, the card goes back to PipeWire. Desktop audio moves to your other cards while osu runs, so check their volume. If the launcher gets killed or crashes, turn the card back on in pavucontrol -> Configuration.
+   Two more menus follow: the sample rate (`OSU_LATENCY_TWEAKER_FREQ`) and the period size (`OSU_LATENCY_TWEAKER_PERIOD`), with the latency of each period size. See step 4 for how to pick them. To use a value that is not on a list, type it and press Enter.
+   Your picks are remembered, and the cursor starts on them next time. To skip a menu, set its variable. For the card, set `OSU_LATENCY_TWEAKER_CARD` to the card id from `aplay -l`, e.g. `DX1` (or `DX1,1` for device 1). Without a terminal (e.g. from a desktop shortcut), the remembered picks are used.
+3. Run without installation: `OSU_LATENCY_TWEAKER_FREQ=44100 OSU_LATENCY_TWEAKER_PERIOD=-441 nix run --extra-experimental-features 'nix-command flakes' github:rszyma/osu-latency-tweaker`. This is just to see if it's working - it runs with the same latency params as osu.
 4. If you confirm that it runs without issues, then read on, and tweak the environment variables to lower the latency. Pick first one from the table below that works for you without issues.
 
     Pick the highest frequency that your audio interface supports, and lowest period size that doesn't produce audio artifacts such a popping or crackling.
