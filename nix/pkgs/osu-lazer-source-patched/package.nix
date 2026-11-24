@@ -8,19 +8,28 @@
 # It uses the same data directory as the release.
 {
   lib,
-  stdenvNoCC,
   buildDotnetModule,
   dotnetCorePackages,
   runCommand,
   makeWrapper,
-  ffmpeg,
   alsa-lib,
-  SDL2,
-  sdl3,
+  icu,
+  krb5,
   lttng-ust,
   numactl,
+  openssl,
   libglvnd,
+  libxkbcommon,
+  libdecor,
+  wayland,
+  libx11,
+  libxext,
+  libxcursor,
   libxi,
+  libxfixes,
+  libxrandr,
+  libxscrnsaver,
+  libxrender,
   udev,
   vulkan-loader,
   patchelfUnstable,
@@ -62,9 +71,11 @@ buildDotnetModule (finalAttrs: {
   nugetDeps = ./deps.json;
 
   dotnet-sdk = dotnetCorePackages.sdk_10_0;
-  dotnet-runtime = dotnetCorePackages.runtime_10_0;
 
+  # Like the release: self-contained, with the .NET runtime version of osu 2026.1117.0.
+  selfContainedBuild = true;
   dotnetFlags = [
+    "-p:RuntimeFrameworkVersion=10.0.15"
     "-p:Version=${osuVersion}"
     # osu shows this up to the "+".
     "-p:InformationalVersion=${osuVersion}-lazer+source"
@@ -72,15 +83,26 @@ buildDotnetModule (finalAttrs: {
 
   nativeBuildInputs = [ makeWrapper ];
 
+  # The bundled SDL3 (ppy's build, as in the release) loads the display libraries at runtime.
   runtimeDeps = [
-    ffmpeg
     alsa-lib
-    SDL2
-    sdl3
+    icu
+    krb5
     lttng-ust
     numactl
+    openssl
     libglvnd
+    libxkbcommon
+    libdecor
+    wayland
+    libx11
+    libxext
+    libxcursor
     libxi
+    libxfixes
+    libxrandr
+    libxscrnsaver
+    libxrender
     udev
     vulkan-loader
   ];
@@ -95,9 +117,6 @@ buildDotnetModule (finalAttrs: {
       --set-default OSU_DISABLE_SCORE_SUBMISSION 1 \
       --set vblank_mode 0
     ln -s osu! $out/bin/osu-lazer
-
-    ln -sft $out/lib/${finalAttrs.pname} ${SDL2}/lib/libSDL2${stdenvNoCC.hostPlatform.extensions.sharedLibrary}
-    ln -sft $out/lib/${finalAttrs.pname} ${sdl3}/lib/libSDL3${stdenvNoCC.hostPlatform.extensions.sharedLibrary}
 
     # Replace BASS_Init symbol with our wrapper from basscallwrap.so.
     ${patchelfUnstable}/bin/patchelf \
