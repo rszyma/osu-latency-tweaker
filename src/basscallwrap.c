@@ -81,6 +81,7 @@ BOOL BASS_Init(int device, int _freq, int flags, int *win, int *clsid) {
     // 1ms is definitely too low, but we're setting such low number on purpose,
     // in order for BASS to automatically set it to twice the length of BASS_CONFIG_DEV_PERIOD,
     // This behaviour is documented.
+    // The resulting buffer is max(2 * period, 1 ms), e.g. 192 frames for period 32 at 192 kHz.
     // https://www.un4seen.com/doc/#bass/BASS_CONFIG_DEV_BUFFER.html
     BASSCALLWRAP_BASS_SetConfig(BASS_CONFIG_DEV_BUFFER, 1);
 
