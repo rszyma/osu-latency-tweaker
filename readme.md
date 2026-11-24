@@ -79,13 +79,18 @@ from the `gameplay-allocations` branch of `~/llm-projects/osu-lazer`
 and the `input-latency` branch of `~/llm-projects/osu-framework`, with the same libbass patch.
 
 ```sh
-NIXPKGS_ALLOW_UNFREE=1 nix run --impure .#osu-lazer-launcher-source
+nix run .#osu-lazer-launcher-source
 ```
 
-Set `OSU_SRC`, `OSU_REF`, `OSU_FRAMEWORK_SRC` and `OSU_FRAMEWORK_REF` to build other clones or branches.
+`flake.lock` pins the commits of both branches.
+Run `nix flake update osu-src osu-framework-src` to build newer commits,
+or `--override-input osu-src git+file:///path/to/osu?ref=branch` (and the same for `osu-framework-src`) to build other clones or branches.
 Only committed changes are built.
-After a change to the NuGet packages of either repo, update the lockfile with
-`nix build --impure .#osu-lazer-source-patched.fetch-deps && ./result nix/pkgs/osu-lazer-source-patched/deps.json`.
+After a change to the NuGet packages of either repo, update the NuGet lockfile with
+`nix build .#osu-lazer-source-patched.fetch-deps && ./result nix/pkgs/osu-lazer-source-patched/deps.json`.
+
+The wrapper sets `OSU_FRAMEWORK_MAXIMUM_FPS=2000` (update, and with an unlimited frame limiter draw, frames at up to 2000 Hz)
+and `DOTNET_GCgen0size=0x10000000` (no gen0 garbage collections during a map). Set them to override.
 
 This is a development build: no score submission, no multiplayer, no update checks and no crash reports.
 It uses the same osu data directory as the release.

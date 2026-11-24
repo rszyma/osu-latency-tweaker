@@ -16,9 +16,45 @@
         "type": "github"
       }
     },
+    "osu-framework-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795536547,
+        "narHash": "sha256-YTqdWdY/AR6ox6YnMOc1qBtW54NpzWs5DONzKOAQN/0=",
+        "ref": "input-latency",
+        "rev": "4b6f57cfb330385f2c900984f596037c2c2812af",
+        "revCount": 26429,
+        "type": "git",
+        "url": "file:///home/n/llm-projects/osu-framework"
+      },
+      "original": {
+        "ref": "input-latency",
+        "type": "git",
+        "url": "file:///home/n/llm-projects/osu-framework"
+      }
+    },
+    "osu-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795493821,
+        "narHash": "sha256-UJsRHrDL3m5aC7QkKarZCL8wi8EJuYSbG7XkAuMcBIU=",
+        "ref": "gameplay-allocations",
+        "rev": "cb3c69ac24a13ae6162c34b70df3a39f455d3ab9",
+        "revCount": 77306,
+        "type": "git",
+        "url": "file:///home/n/llm-projects/osu-lazer"
+      },
+      "original": {
+        "ref": "gameplay-allocations",
+        "type": "git",
+        "url": "file:///home/n/llm-projects/osu-lazer"
+      }
+    },
     "root": {
       "inputs": {
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": "nixpkgs",
+        "osu-framework-src": "osu-framework-src",
+        "osu-src": "osu-src"
       }
     }
   },

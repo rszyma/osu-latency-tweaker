@@ -120,6 +120,8 @@ buildDotnetModule (finalAttrs: {
   postFixup = ''
     # A gen0 budget of 256 MB, so that the little garbage made during gameplay (about 0.1 MB/s)
     # does not cause gen0 collections, each a pause of all threads, within a map.
+    # Update (and with an unlimited frame limiter, draw) frames at up to 2000 Hz, so that each update frame
+    # takes newer mouse input (input-latency branch of osu-framework).
     wrapProgram $out/bin/osu! \
       ${lib.optionalString nativeWayland "--set-default SDL_VIDEODRIVER wayland"} \
       --set OSU_EXTERNAL_UPDATE_PROVIDER 1 \
@@ -127,7 +129,8 @@ buildDotnetModule (finalAttrs: {
       --set-default OSU_DISABLE_SCORE_SUBMISSION 1 \
       --set-default OSU_DISABLE_REALTIME 1 \
       --set vblank_mode 0 \
-      --set-default DOTNET_GCgen0size 0x10000000
+      --set-default DOTNET_GCgen0size 0x10000000 \
+      --set-default OSU_FRAMEWORK_MAXIMUM_FPS 2000
     ln -s osu! $out/bin/osu-lazer
 
     # Replace BASS_Init symbol with our wrapper from basscallwrap.so.
